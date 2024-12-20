@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>能量趋势与频次趋势</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #main, #freq {
+            width: 100%;
+            height: 50%;
+        }
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+</head>
+<body>
+    <div id="main"><div class="loading">加载中...</div></div>
+    <div id="freq"><div class="loading">加载中...</div></div>
+    
+    <script type="module">
+        import { DataGenerator } from '../js/dataGenerator.js';
+        import { ChartConfigurator } from '../js/chartConfigurator.js';
+        import { ChartAnalyzer } from '../js/chartAnalyzer.js';
+
+        // Make utilities available globally for other components
+        window.DataGenerator = DataGenerator;
+        window.ChartAnalyzer = ChartAnalyzer;
+
+        function initializeCharts() {
+            const myChartEnergy = echarts.init(document.getElementById('main'));
+            const myChartFreq = echarts.init(document.getElementById('freq'));
+
+            // Generate data
+            const timeData = DataGenerator.generateTimeData();
+            const sensorData = DataGenerator.generateSensorData(timeData);
+            const frequencyData = DataGenerator.calculateFrequencyData(timeData, sensorData);
+
+            // Create and set options
+            const energyOption = ChartConfigurator.createEnergyOption(timeData, sensorData);
+            const freqOption = ChartConfigurator.createFreqOption(frequencyData);
+
+            myChartEnergy.setOption(energyOption);
+            myChartFreq.setOption(freqOption);
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                myChartEnergy.resize();
+                myChartFreq.resize();
+            });
+        }
+
+        // Initialize when DOM and ECharts are ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof echarts !== 'undefined') {
+                    initializeCharts();
+                } else {
+                    console.error('ECharts is not loaded');
+                }
+            });
+        } else {
+            if (typeof echarts !== 'undefined') {
+                initializeCharts();
+            } else {
+                console.error('ECharts is not loaded');
+            }
+        }
+    </script>
+</body>
+</html>

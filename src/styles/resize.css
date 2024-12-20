@@ -1,0 +1,23 @@
+/* Resize cursors */
+.cursor-col-resize {
+  cursor: col-resize;
+}
+
+.cursor-row-resize {
+  cursor: row-resize;
+}
+
+/* Prevent text selection while resizing */
+.select-none {
+  user-select: none;
+}
+
+/* Ensure resize handles are above content */
+[role="separator"] {
+  z-index: 10;
+}
+
+/* Prevent iframe pointer events during resize */
+.select-none iframe {
+  pointer-events: none;
+}
